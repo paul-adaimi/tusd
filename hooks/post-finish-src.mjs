@@ -43,6 +43,9 @@ async function main() {
   const uploadId = evt?.Upload?.ID || process.env.TUS_ID;
   const meta = evt?.Upload?.MetaData || {};
 
+  console.error("META KEYS:", Object.keys(meta));
+  console.error("META RAW:", meta);
+
   const orderId = safe(meta.orderId);
   const itemId = safe(meta.itemId);
   const filename = ensureZip(
