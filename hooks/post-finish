@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+# Example hook – just proves it runs
+echo "post-finish fired. TUS_ID=$TUS_ID TUS_SIZE=$TUS_SIZE" >&2
+
+# tusd expects a JSON response on stdout (can be empty object for non-blocking hooks)
+echo "{}"
+exit 0
