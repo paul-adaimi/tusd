@@ -4,7 +4,7 @@ FROM tusproject/tusd:latest
 COPY hooks/ /hooks/
 
 # Make sure hook files are executable
-RUN chmod +x /hooks/*
+COPY --chmod=755 hooks/post-finish /hooks/post-finish
 
 # Example: store uploads on disk in /data (use a Railway Volume for persistence)
 # Enable hooks directory
