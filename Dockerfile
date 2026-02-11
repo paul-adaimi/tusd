@@ -2,8 +2,8 @@ FROM node:22-alpine AS hookbuild
 WORKDIR /app
 RUN npm init -y >/dev/null 2>&1
 RUN npm i @aws-sdk/client-s3 esbuild
-COPY hooks/post-finish.mjs /app/post-finish.mjs
-RUN npx esbuild /app/post-finish.mjs --bundle --platform=node --format=esm --outfile=/app/post-finish.mjs
+COPY hooks/post-finish.mjs /app/post-finish-src.mjs
+RUN npx esbuild /app/post-finish-src.mjs --bundle --platform=node --format=esm --outfile=/app/post-finish.mjs
 
 FROM tusproject/tusd:latest
 
