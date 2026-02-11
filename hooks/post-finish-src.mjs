@@ -40,8 +40,12 @@ async function main() {
     evt = JSON.parse(raw);
   } catch {}
 
-  const uploadId = evt?.Upload?.ID || process.env.TUS_ID;
-  const meta = evt?.Upload?.MetaData || {};
+  // ✅ tusd hook payload: metadata lives under Event.Upload.MetaData
+  const upload = evt?.Event?.Upload;
+  const meta = upload?.MetaData || {};
+  const storage = upload?.Storage || {};
+
+  const uploadId = upload?.ID || process.env.TUS_ID;
 
   console.error("META KEYS:", Object.keys(meta));
   console.error("META RAW:", meta);
@@ -69,7 +73,9 @@ async function main() {
     return;
   }
 
-  const sourceKey = `uploads/${uploadId}`;
+  // ✅ Use tusd-provided storage key if available (more robust than hardcoding uploads/)
+  const bucket = storage?.Bucket || BUCKET;
+  const sourceKey = storage?.Key || `uploads/${uploadId}`;
   const destKey = `orders/${orderId}/${itemId}/${filename}`;
 
   const s3 = new S3Client({
@@ -83,12 +89,12 @@ async function main() {
   });
 
   try {
-    await s3.send(new HeadObjectCommand({ Bucket: BUCKET, Key: sourceKey }));
+    await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: sourceKey }));
 
     await s3.send(
       new CopyObjectCommand({
-        Bucket: BUCKET,
-        CopySource: `/${BUCKET}/${sourceKey}`,
+        Bucket: bucket,
+        CopySource: `/${bucket}/${sourceKey}`,
         Key: destKey,
         ContentType: "application/zip",
         ContentDisposition: `attachment; filename="${filename}"`,
@@ -96,12 +102,11 @@ async function main() {
       }),
     );
 
-    await s3.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: sourceKey }));
+    await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: sourceKey }));
 
     console.error("Moved upload", { sourceKey, destKey });
   } catch (e) {
     console.error("post-finish move failed", e);
-    // don't crash tusd; just exit cleanly
   }
 
   process.stdout.write("{}");
