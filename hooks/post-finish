@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-exec node /hooks/post-finish.mjs
+exec node /hooks/post-finish.cjs
