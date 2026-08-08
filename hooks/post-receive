@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# No bundling needed here (unlike post-finish, which needs @aws-sdk/client-s3
+# bundled to CJS) — this script only uses Node's built-in fetch/AbortSignal,
+# so the plain .mjs source runs directly.
+exec node /hooks/post-receive-src.mjs

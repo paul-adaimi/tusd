@@ -11,6 +11,8 @@ exec tusd \
   -port="${PORT:-8080}" \
   -base-path=/files/ \
   -hooks-dir=/hooks \
+  -hooks-enabled-events=pre-create,post-create,post-receive,post-finish,post-terminate \
+  -progress-hooks-interval=3s \
   -s3-bucket="$B2_BUCKET" \
   -s3-endpoint="$B2_ENDPOINT" \
   -s3-object-prefix=uploads/ \

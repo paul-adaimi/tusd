@@ -22,5 +22,11 @@ RUN mkdir -p /hooks
 COPY --chmod=755 hooks/post-finish /hooks/post-finish
 COPY --from=hookbuild /app/post-finish.cjs /hooks/post-finish.cjs
 
+# No esbuild bundling needed here — post-receive-src.mjs has no external
+# npm dependencies (just Node's built-in fetch/AbortSignal), unlike
+# post-finish which needs @aws-sdk/client-s3 bundled to CJS.
+COPY --chmod=755 hooks/post-receive /hooks/post-receive
+COPY --chmod=755 hooks/post-receive-src.mjs /hooks/post-receive-src.mjs
+
 COPY --chmod=755 start.sh /start.sh
 ENTRYPOINT ["/start.sh"]
